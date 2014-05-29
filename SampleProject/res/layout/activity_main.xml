@@ -1,0 +1,105 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/globalLayout"
+    tools:context="${packageName}.${activityClass}" >
+<RelativeLayout 
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView 1"
+        android:layout_margin="20dip"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"/>
+
+    <RadioGroup
+        android:id="@+id/radiogroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="20dip"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/radio1"
+            android:text="Radio 1"/>
+        <RadioButton
+            android:id="@+id/radio2"
+            android:text="Radio 2"/>
+	</RadioGroup>
+
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/radiogroup"
+	    android:layout_centerHorizontal="true"
+	    android:layout_margin="20dip"
+	    android:orientation="vertical" >
+
+	    <CheckBox 
+	        android:id="@+id/checkbox1"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_gravity="left"
+	        android:text="Checkbox 1"/>
+	    <TextView 
+	        android:id="@+id/textView2"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_gravity="center_horizontal"
+	        android:text="TextView 2"/>
+	    <CheckBox 
+	        android:id="@+id/checkbox2"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_gravity="right"
+	        android:text="Checkbox 2"/>
+	</LinearLayout>
+	
+	<LinearLayout
+	    android:id="@+id/buttonsLayout"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="horizontal"
+	    android:gravity="center_horizontal"
+	    android:layout_alignParentBottom="true">
+	    <Button 
+   	        android:id="@+id/button1"
+	        android:onClick="Button1"
+	        android:text="1"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"/>
+	    <Button 
+   	        android:id="@+id/button2"
+	        android:onClick="Button2"
+	        android:text="2"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"/>
+   	    <Button 
+   	        android:id="@+id/button3"
+	        android:onClick="Button3"
+	        android:text="3"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"/>
+   	    <Button 
+   	        android:id="@+id/button4"
+	        android:onClick="Button4"
+	        android:text="4"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"/>
+   	    <Button 
+   	        android:id="@+id/button5"
+	        android:onClick="Button5"
+	        android:text="5"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"/>
+   	</LinearLayout>
+</RelativeLayout>
+</FrameLayout>

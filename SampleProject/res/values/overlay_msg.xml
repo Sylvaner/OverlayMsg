@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="overlay_msg_default_border_size">5dip</dimen>
+    <dimen name="overlay_msg_default_text_size">30sp</dimen>
+    <dimen name="overlay_msg_default_text_margin">10sp</dimen>
+    
+    <color name="overlay_msg_default_text_color">#FFFFFFFF</color>
+    <color name="overlay_msg_default_text_background_color">#FF000000</color>
+    <color name="overlay_msg_default_background_color">#DD000000</color>
+    <color name="overlay_msg_default_border_color">#FF990000</color>
+    
+    <bool name="overlay_msg_default_use_antialias">true</bool>
+    <bool name="overlay_msg_default_show_text_background">false</bool>
+</resources>
