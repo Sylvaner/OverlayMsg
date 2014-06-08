@@ -40,15 +40,15 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -129,16 +129,26 @@ public class OverlayMsg
 	 * @brief TextView font
 	 */
 	public Typeface textFont;
+	/**
+	 * @brief Show a message under text.
+	 */
+	public boolean showPressToContinue;
+	/**
+	 * @brief Press to continue text size.
+	 */
+	public int pressToContinueTextSize;
+	/**
+	 * @brief State at true if message is currently showed.
+	 */
+	private boolean currentlyShowed;
+	/**
+	 * @brief Current message layout.
+	 */
+	private RelativeLayout currentLayout;
 	
 	/**
 	 * @brief Class constructor.
 	 * @param applicationActivity Application activity
-	 * @see borderSize
-	 * @see textSize
-	 * @see textMargin
-	 * @see textColor
-	 * @see backgroundColor
-	 * @see borderColor
 	 * @details Initializes all default values.
 	 */
 	public OverlayMsg(Activity applicationActivity)
@@ -153,6 +163,8 @@ public class OverlayMsg
 		borderColor = activity.getResources().getColor(R.color.overlay_msg_default_border_color);
 		antiAlias = activity.getResources().getBoolean(R.bool.overlay_msg_default_use_antialias);
 		showTextBackground = activity.getResources().getBoolean(R.bool.overlay_msg_default_show_text_background);
+		showPressToContinue = activity.getResources().getBoolean(R.bool.overlay_msg_default_press_to_continue);
+		pressToContinueTextSize = activity.getResources().getDimensionPixelSize(R.dimen.overlay_msg_default_press_text_size);
 		textFont = null;
 	}
 	
@@ -221,7 +233,7 @@ public class OverlayMsg
 	public void showTextWithBigRect(int globalLayoutId, int viewToSurround1, int viewToSurround2, String msg, int position, final OverlayMsg.Event overlayEvent)
 	{
 		final FrameLayout globalLayout = (FrameLayout)activity.findViewById(globalLayoutId);
-		final RelativeLayout layout = createOverlayLayout(globalLayout, overlayEvent);
+		createOverlayLayout(globalLayout, overlayEvent);
 
 		Bitmap bitmap = createBitmap(globalLayout);
 		Canvas canvas = new Canvas(bitmap);
@@ -239,10 +251,11 @@ public class OverlayMsg
 				location1[1] - offset, 
 				location2[0] - location1[0] + v2.getWidth(), 
 				location2[1] - location1[1] + v2.getHeight());
-		layout.addView(getTextView(msg), getTextViewLayoutParams(position));
+		currentLayout.addView(getMessageLayout(msg, position));
 
-		setBackgroundToLayout(layout, bitmap);
-		globalLayout.addView(layout);
+		setBackgroundToLayout(currentLayout, bitmap);
+		currentlyShowed = true;
+		globalLayout.addView(currentLayout);
 	}
 
 	
@@ -269,7 +282,7 @@ public class OverlayMsg
 		if (shapeArray.length == length)
 		{
 			final FrameLayout globalLayout = (FrameLayout)activity.findViewById(globalLayoutId);
-			final RelativeLayout layout = createOverlayLayout(globalLayout, overlayEvent);
+			createOverlayLayout(globalLayout, overlayEvent);
 
 			Bitmap bitmap = createBitmap(globalLayout);
 			Canvas canvas = new Canvas(bitmap);
@@ -300,50 +313,45 @@ public class OverlayMsg
 					addRect(canvas, location[0], location[1] - getStartOffset(globalLayout), v.getWidth(), v.getHeight());
 				}
 			}
-			layout.addView(getTextView(msg), getTextViewLayoutParams(position));
-
-			setBackgroundToLayout(layout, bitmap);
-			globalLayout.addView(layout);
+			currentLayout.addView(getMessageLayout(msg, position));
+			setBackgroundToLayout(currentLayout, bitmap);
+			currentlyShowed = true;
+			globalLayout.addView(currentLayout);
 		}
 	}
 
 	/**
 	 * @brief Add a fade in animation to the overlay layout
-	 * @param layout The overlay layout.
 	 */
-	private void setFadeIn(RelativeLayout layout)
+	private void setFadeIn()
 	{
 		Animation fadeIn = new AlphaAnimation(0, 1);
 	    fadeIn.setDuration(150);
-	    layout.setAnimation(fadeIn);
+	    currentLayout.setAnimation(fadeIn);
 	}
 	
 	/**
 	 * @brief Add a fade out animation to the overlay layout.
-	 * @param layout The overlay layout.
 	 * @param overlayEvent Event called at the end of the display.
 	 * @details The event is attached in this method and called at the end of the animation.
 	 */
-	private void setFadeOut(final RelativeLayout layout, final OverlayMsg.Event overlayEvent)
+	private void setFadeOut(final OverlayMsg.Event overlayEvent)
 	{
-		layout.setOnTouchListener(new OnTouchListener() {
-			public boolean onTouch(View v, MotionEvent event) {
-				if (event.getAction() == MotionEvent.ACTION_DOWN)
-				{
-					Animation fadeOut = new AlphaAnimation(1, 0);
-				    fadeOut.setDuration(150);
-				    fadeOut.setAnimationListener(new AnimationListener() {
-						public void onAnimationStart(Animation animation) {}
-						public void onAnimationRepeat(Animation animation) {}
-						public void onAnimationEnd(Animation animation) {
-							// Remove the layout from the parent
-							((ViewGroup)layout.getParent()).removeView(layout);
-							if (overlayEvent != null)
-								overlayEvent.event();
-							}});
-					layout.startAnimation(fadeOut);
-				}
-				return true;
+		currentLayout.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				Animation fadeOut = new AlphaAnimation(1, 0);
+			    fadeOut.setDuration(150);
+			    fadeOut.setAnimationListener(new AnimationListener() {
+					public void onAnimationStart(Animation animation) {}
+					public void onAnimationRepeat(Animation animation) {}
+					public void onAnimationEnd(Animation animation) {
+						// Remove the layout from the parent
+						currentlyShowed = false;
+						((ViewGroup)currentLayout.getParent()).removeView(currentLayout);
+						if (overlayEvent != null)
+							overlayEvent.event();
+						}});
+			    currentLayout.startAnimation(fadeOut);
 			}});
 	}
 	
@@ -372,17 +380,13 @@ public class OverlayMsg
 	 * @brief Create the overlay layout.
 	 * @param globalLayout Main layout.
 	 * @param overlayEvent Event called at the end of the display.
-	 * @return Created layout.
-	 * @see setFadeIn
-	 * @see setFadeOut
 	 */
-	private RelativeLayout createOverlayLayout(FrameLayout globalLayout, OverlayMsg.Event overlayEvent)
+	private void createOverlayLayout(FrameLayout globalLayout, OverlayMsg.Event overlayEvent)
 	{
-		final RelativeLayout layout = new RelativeLayout(activity);
-		layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-		setFadeIn(layout);
-		setFadeOut(layout, overlayEvent);
-		return layout;
+		currentLayout = new RelativeLayout(activity);
+		currentLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+		setFadeIn();
+		setFadeOut(overlayEvent);
 	}
 	
 	/**
@@ -500,6 +504,20 @@ public class OverlayMsg
 	}
 	
 	/**
+	 * @brief Get the message "Press to continue" TextView.
+	 * @return Created TextView.
+	 */
+	private TextView getPressToContinueTextView()
+	{
+		TextView textView = new TextView(activity);
+		textView.setGravity(Gravity.CENTER_HORIZONTAL);
+		textView.setTextColor(textColor);
+		textView.setTextSize(pressToContinueTextSize);
+		textView.setText(activity.getResources().getString(R.string.overlay_msg_press_to_continue));
+		return textView;
+	}
+	
+	/**
 	 * @brief Get the LayoutParams neccessary for the TextView position.
 	 * @param position Position of the text on the screen.
 	 * @return LayoutParams of the TextView.
@@ -510,7 +528,7 @@ public class OverlayMsg
 	 * - OverlayMsg::POSITION_CENTER,
 	 * - OverlayMsg::POSITION_BOTTOM.
 	 */
-	private RelativeLayout.LayoutParams getTextViewLayoutParams(int position)
+	private RelativeLayout.LayoutParams getLayoutParams(int position)
 	{
 		RelativeLayout.LayoutParams layoutParams;
 		
@@ -533,6 +551,25 @@ public class OverlayMsg
 	}
 	
 	/**
+	 * @brief Create the message layout.
+	 * @param msg Message to show.
+	 * @param position Position in the screen.
+	 */
+	private LinearLayout getMessageLayout(String msg, int position)
+	{
+		LinearLayout layout = new LinearLayout(activity);
+		layout.setLayoutParams(getLayoutParams(position));
+		layout.setOrientation(LinearLayout.VERTICAL);
+		layout.setGravity(Gravity.CENTER_HORIZONTAL);
+		if (showTextBackground)
+			layout.setBackgroundColor(textBackgroundColor);
+		layout.addView(getTextView(msg));
+		if (showPressToContinue)
+			layout.addView(getPressToContinueTextView());
+		return layout;
+	}
+	
+	/**
 	 * @brief Apply background to overlay layout.
 	 * @param layout Overlay layout.
 	 * @param bitmap Background.
@@ -547,6 +584,26 @@ public class OverlayMsg
 		    layout.setBackgroundDrawable(drawable);
 		else
 		    layout.setBackground(drawable);
+	}
+	
+	/**
+	 * @brief Method to know if a message is currently showed.
+	 * @return True if message is currently showed.
+	 */
+	public boolean isCurrentlyShowed()
+	{
+		return currentlyShowed;
+	}
+	
+	/**
+	 * @brief Hide the current message.
+	 */
+	public void hideCurrentMessage()
+	{
+		if (currentLayout != null && currentlyShowed)
+		{
+			currentLayout.performClick();
+		}
 	}
 }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="overlay_msg_default_border_size">5dip</dimen>
-    <dimen name="overlay_msg_default_text_size">30sp</dimen>
+    <dimen name="overlay_msg_default_text_size">25sp</dimen>
     <dimen name="overlay_msg_default_text_margin">10sp</dimen>
     
     <color name="overlay_msg_default_text_color">#FFFFFFFF</color>
@@ -11,4 +11,9 @@
     
     <bool name="overlay_msg_default_use_antialias">true</bool>
     <bool name="overlay_msg_default_show_text_background">false</bool>
+    
+    <bool name="overlay_msg_default_press_to_continue">true</bool>
+    <dimen name="overlay_msg_default_press_text_size">18sp</dimen>
+    
+    <string name="overlay_msg_press_to_continue">Press to continue</string>
 </resources>

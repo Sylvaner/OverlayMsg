@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -35,8 +36,10 @@ public class MainActivity extends Activity
 	{
 		OverlayMsg ovm = new OverlayMsg(this);
 		// Add background to text
+		// Hide press to continue
 		ovm.showTextBackground = true;
 		ovm.textBackgroundColor = 0xFF000000;
+		ovm.showPressToContinue = false;
 		ovm.showTextWithRect(R.id.globalLayout, R.id.radiogroup, "A radio group", OverlayMsg.POSITION_TOP, null);
 	}
 
@@ -44,8 +47,10 @@ public class MainActivity extends Activity
 	{
 		OverlayMsg ovm = new OverlayMsg(this);
 		// Change border size and color
+		// Change press to continue text size
 		ovm.borderColor = 0xFF00FF00;
 		ovm.borderSize = 50;
+		ovm.pressToContinueTextSize = convertSpToPixel(10);
 		ovm.showTextWithCircle(R.id.globalLayout, R.id.radio1, "This things", OverlayMsg.POSITION_BOTTOM, null);
 	}
 	public void Button4(View view)
@@ -83,5 +88,19 @@ public class MainActivity extends Activity
 						Toast.makeText(getApplicationContext(), "Final sample", Toast.LENGTH_LONG).show();
 					}
 				});
+	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event)
+	{
+		OverlayMsg ovm = new OverlayMsg(this);
+		if (keyCode == KeyEvent.KEYCODE_BACK)
+		{
+			if (ovm.isCurrentlyShowed())
+			{
+				ovm.hideCurrentMessage();
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }
