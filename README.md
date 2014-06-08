@@ -27,18 +27,20 @@ ovm.textSize = convertSpToPixel(40);
 ovm.showTextWithCircle(R.id.globalLayout, R.id.textView1, "First text view", OverlayMsg.POSITION_CENTER, null);
 ```
 
-![Premier exemple](http://www.sdangin.fr/git/screenshot1.png)
+![First example](http://www.sdangin.fr/git/screenshot1.png)
 
 ### Second example 
 * Display a message. 
 * At the top of the screen. 
 * Add a black background to the text. 
+* Hide 'Press to continue'.
 * Surround a group of radio buttons with a rectangle.
 
 ```java
 OverlayMsg ovm = new OverlayMsg(this);
 ovm.showTextBackground = true;
 ovm.textBackgroundColor = 0xFF000000;
+ovm.showPressToContinue = false;
 ovm.showTextWithRect(R.id.globalLayout, R.id.radiogroup, "A radio group", OverlayMsg.POSITION_TOP, null);
 ```
 
@@ -50,11 +52,13 @@ ovm.showTextWithRect(R.id.globalLayout, R.id.radiogroup, "A radio group", Overla
 * Surround a radio button in a circle.
 * With a green border.
 * And a thickness of 50 pixels.
+* Change 'Press to continue' text size
 
 ```java
 OverlayMsg ovm = new OverlayMsg(this);
 ovm.borderColor = 0xFF00FF00;
 ovm.borderSize = 50;
+ovm.pressToContinueTextSize = convertSpToPixel(10);
 ovm.showTextWithCircle(R.id.globalLayout, R.id.radio1, "This things", OverlayMsg.POSITION_BOTTOM, null);
 ```
 
@@ -75,7 +79,7 @@ ovm.textSize = convertSpToPixel(50);
 ovm.showTextWithBigRect(R.id.globalLayout, R.id.checkbox1, R.id.checkbox2, "A big box", OverlayMsg.POSITION_TOP, null);
 ```
 
-![Quatrième exemple](http://www.sdangin.fr/git/screenshot4.png)
+![Fourth example](http://www.sdangin.fr/git/screenshot4.png)
 
 ### Fifth example
 * Display a message.
@@ -108,7 +112,40 @@ ovm.showTextWithMultiple(
 	});
 ```
 
-![Cinquième exemple](http://www.sdangin.fr/git/screenshot5.png)
+![Fifth example](http://www.sdangin.fr/git/screenshot5.png)
+
+## F.A.Q.
+### Capture the back button
+
+If you want to hide the message with the back button, you can add this code to your activity.
+
+```java
+public boolean onKeyDown(int keyCode, KeyEvent event)
+{
+  if (keyCode == KeyEvent.KEYCODE_BACK)
+  {
+    if (ovm.isCurrentlyShowed())
+    {
+      ovm.hideCurrentMessage();
+      return true;
+    }
+  }
+  return super.onKeyDown(keyCode, event);
+}
+```
+
+### Display a message on the opening screen 
+
+If you want to display a message just after calling ```setContentView```, you must run the display delayed.
+
+```java
+new Handler().postDelayed(new Runnable(){
+  public void run(){
+    ovm.textSize = convertSpToPixel(40);
+    ovm.showTextWithCircle(R.id.globalLayout, R.id.textView1, "First text view", OverlayMsg.POSITION_CENTER, null);
+  }
+}, 500);
+```
 
 # OverlayMsg (Français)
 ## Présentation
@@ -144,12 +181,14 @@ ovm.showTextWithCircle(R.id.globalLayout, R.id.textView1, "First text view", Ove
 * Afficher un message.
 * En haut de l'écran.
 * Ajouter un fond noir à ce texte.
+* Cacher "Press to continue"
 * Entourer un groupe de boutons radio avec un rectangle.
 
 ```java
 OverlayMsg ovm = new OverlayMsg(this);
 ovm.showTextBackground = true;
 ovm.textBackgroundColor = 0xFF000000;
+ovm.showPressToContinue = false;
 ovm.showTextWithRect(R.id.globalLayout, R.id.radiogroup, "A radio group", OverlayMsg.POSITION_TOP, null);
 ```
 
@@ -161,11 +200,13 @@ ovm.showTextWithRect(R.id.globalLayout, R.id.radiogroup, "A radio group", Overla
 * Entourer un bouton radio d'un cercle.
 * Avec un bord vert.
 * Et une épaisseur de 50 pixels.
+* Modifier la taille du message 'Press to continue'.
 
 ```java
 OverlayMsg ovm = new OverlayMsg(this);
 ovm.borderColor = 0xFF00FF00;
 ovm.borderSize = 50;
+ovm.pressToContinueTextSize = convertSpToPixel(10);
 ovm.showTextWithCircle(R.id.globalLayout, R.id.radio1, "This things", OverlayMsg.POSITION_BOTTOM, null);
 ```
 
@@ -221,3 +262,35 @@ ovm.showTextWithMultiple(
 
 ![Cinquième exemple](http://www.sdangin.fr/git/screenshot5.png)
 
+## F.A.Q.
+### Capturer le bouton BACK
+
+Si vous voulez cacher le message avec le bouton BACK, vous pouvez ajouter ce code à votre 'Activity'.
+
+```java
+public boolean onKeyDown(int keyCode, KeyEvent event)
+{
+  if (keyCode == KeyEvent.KEYCODE_BACK)
+  {
+    if (ovm.isCurrentlyShowed())
+    {
+      ovm.hideCurrentMessage();
+      return true;
+    }
+  }
+  return super.onKeyDown(keyCode, event);
+}
+```
+
+### Afficher un message à l'ouverture de l'écran
+
+Si vous voulez afficher un message juste après avoir appelé ```setContentView```, vous devez lancer l'affichage en différé.
+
+```java
+new Handler().postDelayed(new Runnable(){
+  public void run(){
+    ovm.textSize = convertSpToPixel(40);
+    ovm.showTextWithCircle(R.id.globalLayout, R.id.textView1, "First text view", OverlayMsg.POSITION_CENTER, null);
+  }
+}, 500);
+```
